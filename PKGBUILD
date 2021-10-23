@@ -19,15 +19,16 @@
 ## Default is: 0 => generic
 ## Good option if your package is for one machine: 98 => Intel native
 ##                                                 99 => AMD native
-## Here chooses generic, if you want better performance, please install from AUR
+## It will use native by default
 if [ -z ${_microarchitecture+x} ]; then
-  _microarchitecture=0
+    _microarchitecture=0
 fi
 
 ## Disable NUMA since most users do not have multiple processors. Breaks CUDA/NvEnc.
 ## Archlinux and Xanmod enable it by default.
 ## Set variable "use_numa" to: n to disable (possibly increase performance)
 ##                             y to enable  (stock default)
+## Here keeps default is ok
 if [ -z ${use_numa+x} ]; then
   use_numa=y
 fi
@@ -42,7 +43,7 @@ fi
 
 ## Choose between GCC and CLANG config (default is GCC)
 if [ -z ${_compiler+x} ]; then
-  _compiler=clang
+  _compiler=gcc
 fi
 
 ## Setting some security options
@@ -70,12 +71,13 @@ _makenconfig=
 
 pkgbase=linux-xanmod-cacule-uksm-cjktty
 _major=5.14
-pkgver=${_major}.12
+pkgver=${_major}.14
 _branch=5.x
-xanmod=1
+xanmod=2
 pkgrel=${xanmod}
 pkgdesc='Linux Xanmod. Branch with Cacule scheduler by Hamad Marri'
 _patches_url="https://gitlab.com/sirlucjan/kernel-patches/-/raw/master/${_major}"
+_jobs=$(nproc)
 url="http://www.xanmod.org/"
 arch=(x86_64)
 license=(GPL2)
@@ -97,7 +99,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar
         "0001-cjktty.patch::https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${_branch}/cjktty-${_major}.patch"
         "0002-UKSM.patch::${_patches_url}/uksm-patches-v2/0001-UKSM-for-${_major}.patch"
         "0003-zstd.patch::${_patches_url}/zstd-patches-v2/0001-zstd-patches.patch"
-)
+        )
 
 validpgpkeys=(
     'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linux Torvalds
@@ -112,7 +114,7 @@ done
 
 b2sums=('0047f5aaa3940dff97f4055ef544faafbbb5282128e6afe21d2f47d8dc8c395806a17016febfa050117d16f59e74b882cb8b9c5011d68f119c230d0a4d120524'
         'SKIP'
-        'ad8e5e7781c1ae255ef23763c8692566e44795770292b7685229d8adfd58ded2be8b3c78598d6b2c815a364a2d2a2f79eb8dfd93a32db016ecff0f4d602b6888'
+        'ee36d4fb287e1e078e6c0b0ecf039d5e6b577b95761f9f7a3f2f3dac81a9a4f62cbfd124ae95f2cd24d09766d46f34ab285424edbbeb05f94adc7895a698ac30'
         '610a717e50339b45573dfd0b00da20ef3797053d93a5116673756f8644fbd4fbca9e82587225ebb94a5c51b0e5f1b92329d515c8c60466b41c6845ed06a7405a'
         '21d13b890e7b80c924e18ae11f675d69a80adffbe75e37bebd003024e7299c582346b0df60b67c709eba9678bcf6dda7da852c9cf18d43804ddd8ee9388b9ea5'
         '8f6d6263f0e517b6e7a1809fc57e01cc4b13dd261f778041026ec510f48257d4f525c3cb0b0935e291293960c9191282f5765ca0af3d948838e8f865c7deafcc'
@@ -281,7 +283,7 @@ prepare() {
 
 build() {
   cd linux-${_major}
-  make LLVM=$_LLVM LLVM_IAS=$_LLVM -j40 all
+  make LLVM=$_LLVM LLVM_IAS=$_LLVM -j${_jobs} all
 }
 
 _package() {

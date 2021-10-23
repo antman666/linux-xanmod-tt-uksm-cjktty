@@ -11,6 +11,6 @@ jobs:
       - uses: ncipollo/release-action@v1.8.6
         with:
           allowUpdates: true
-          tag: "linux-xanmod-cacule-uksm-cjktty_v5.14.12_clang"
+          tag: "linux-xanmod-cacule-uksm-cjktty_v5.14.14-2_gcc"
           artifacts: "./*/*.zst"
           token: ${{ secrets.GITHUB_TOKEN }}
