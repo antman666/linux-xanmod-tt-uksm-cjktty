@@ -4,13 +4,13 @@ jobs:
   build_for_arch:
     runs-on: ubuntu-latest
     steps:
-      - name: Build linux-xanmod-cacule-uksm-cjktty for arch
+      - name: Build linux-xanmod-tt-uksm-cjktty for arch
         uses: antman666/build-aur-action@mine
         with:
-          repo-name: linux-xanmod-cacule-uksm-cjktty
+          repo-name: linux-xanmod-tt-uksm-cjktty
       - uses: ncipollo/release-action@v1.8.6
         with:
           allowUpdates: true
-          tag: "linux-xanmod-cacule-uksm-cjktty_v5.14.15-1_clang"
+          tag: "linux-xanmod-tt-uksm-cjktty_v5.15.2-1_gcc"
           artifacts: "./*/*.zst"
           token: ${{ secrets.GITHUB_TOKEN }}
