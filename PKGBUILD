@@ -28,7 +28,7 @@ _microarchitecture=0
 ##                             y to enable  (stock default)
 ## Here keeps default is ok
 if [ -z ${use_numa+x} ]; then
-  use_numa=y
+  use_numa=n
 fi
 
 ## For performance you can disable FUNCTION_TRACER/GRAPH_TRACER. Limits debugging and analyzing of the kernel.
@@ -41,7 +41,7 @@ fi
 
 ## Choose between GCC and CLANG config (default is GCC)
 if [ -z ${_compiler+x} ]; then
-  _compiler=clang
+  _compiler=gcc
 fi
 
 # Compress modules with ZSTD (to save disk space)
@@ -75,7 +75,7 @@ _makenconfig=
 pkgbase=linux-xanmod-tt-uksm-cjktty
 replaces=("linux-xanmod-cacule-uksm-cjktty")
 _major=5.15
-pkgver=${_major}.13
+pkgver=${_major}.21
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
@@ -102,7 +102,6 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar
         choose-gcc-optimization.sh
         "0001-cjktty.patch::https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${_branch}/cjktty-${_major}.patch"
         "0002-UKSM.patch::${_patches_url}/uksm-patches/0001-UKSM-for-${_major}.patch"
-        "0003-zstd.patch::${_patches_url}/zstd-patches/0001-zstd-patches.patch"
         )
 
 validpgpkeys=(
