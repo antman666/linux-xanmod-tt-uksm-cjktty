@@ -1,4 +1,4 @@
-# Maintainer : antman666 <945360554@qq.com>
+# Maintainer : AntMan666 <945360554@qq.com>
 # Contributor: zhullyb <zhullyb@outlook.com>
 # Contributor: Yeqin Su <hougelangley1987@gmail.com>
 # Contributor: Torge Matthies <openglfreak at googlemail dot com>
@@ -75,7 +75,7 @@ _makenconfig=
 pkgbase=linux-xanmod-tt-uksm-cjktty
 replaces=("linux-xanmod-cacule-uksm-cjktty")
 _major=5.15
-pkgver=${_major}.26
+pkgver=${_major}.27
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
