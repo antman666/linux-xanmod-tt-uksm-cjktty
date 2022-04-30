@@ -15,7 +15,10 @@
 ## Default is: 0 => generic
 ## Good option if your package is for one machine: 98 => Intel native
 ##                                                 99 => AMD native
-_microarchitecture=0
+## It will use native by default
+if [ -z ${_microarchitecture+x} ]; then
+    _microarchitecture=0
+fi
 
 ## Disable NUMA since most users do not have multiple processors. Breaks CUDA/NvEnc.
 ## Archlinux and Xanmod enable it by default.
@@ -33,9 +36,14 @@ if [ -z ${use_tracers+x} ]; then
   use_tracers=n
 fi
 
-## Choose between GCC and CLANG config (default is GCC)
+# Selecting between tickless idle, perodic tics or full tickless
+if [ -z ${_tickrate+x} ]; then
+  _tickrate="full"
+fi
+
+## Choose between GCC and CLANG config (default is CLANG)
 if [ -z ${_compiler+x} ]; then
-  _compiler=gcc
+  _compiler=clang
 fi
 
 # Compress modules with ZSTD (to save disk space)
@@ -57,6 +65,11 @@ fi
 # optimization (default O3)
 if [ -z ${_use_O3+x} ];then
   _use_O3=y
+fi
+
+# Use LLVM Type ( "full" or "thin" )
+if [ -z ${_use_llvm_type+x} ]; then
+  _use_llvm_type="full"
 fi
 
 # cpufreq gov (available:performance,ondemand,conservative,userspace,schedutil,powersave)
@@ -95,7 +108,7 @@ fi
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
 _major=5.15
-pkgver=${_major}.34
+pkgver=${_major}.36
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
@@ -109,6 +122,7 @@ makedepends=(
 )
 _patches_url="https://gitlab.com/sirlucjan/kernel-patches/-/raw/master/${_major}"
 _jobs=$(nproc)
+_core=$(nproc --all)
 if [ "${_compiler}" = "clang" ]; then
   makedepends+=(clang llvm lld python)
   _LLVM=1
@@ -137,7 +151,7 @@ done
 
 sha256sums=('57b2cf6991910e3b67a1b3490022e8a0674b6965c74c12da1e99d138d1991ee8'
             'SKIP'
-            '30a7a79e01f3e04b95c4f221ded20a0fab3fdab521afad551be5636586199b5f'
+            '127db54a36c0f7c499bd3742b00fdc17d7802c7a616c7489244f88eeddf60e3e'
             '1ac18cad2578df4a70f9346f7c6fccbb62f042a0ee0594817fdef9f2704904ee'
             '97a525e28a270c5e6e5a4fc4ab4920c42ceef2f9921857497ab3c56ec343803e'
             'cb348cc3ba1a453ac6057ecc08000a2ccddc47b70491caaf71db34a3d630f77c')
@@ -170,11 +184,32 @@ prepare() {
   # Applying configuration
   cp -vf CONFIGS/xanmod/${_compiler}/config .config
 
-  # enable LTO_CLANG_FULL
+  # enable LTO_CLANG
   if [ "${_compiler}" = "clang" ]; then
-    msg2 "Enable LTO_CLANG_FULL"
-    scripts/config --disable LTO_CLANG_THIN
-    scripts/config --enable LTO_CLANG_FULL
+    if [ $_use_llvm_type = "thin" ]; then
+      msg2 "Enable LTO_CLANG_THIN"
+      scripts/config --disable LTO_NONE \
+      --enable LTO \
+      --enable LTO_CLANG \
+      --enable ARCH_SUPPORTS_LTO_CLANG \
+      --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
+      --enable HAS_LTO_CLANG \
+      --enable LTO_CLANG_THIN \
+      --enable HAVE_GCC_PLUGINS
+    elif [ $_use_llvm_type = "full" ]; then
+      msg2 "Enable LTO_CLANG_FULL"
+      scripts/config --disable LTO_NONE \
+        --enable LTO \
+        --enable LTO_CLANG \
+        --enable ARCH_SUPPORTS_LTO_CLANG \
+        --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
+        --enable HAS_LTO_CLANG \
+        --enable LTO_CLANG \
+        --enable LTO_CLANG_FULL \
+        --enable HAVE_GCC_PLUGINS
+    else
+      scripts/config --enable CONFIG_LTO_NONE
+    fi
   fi
 
   # CONFIG_STACK_VALIDATION gives better stack traces. Also is enabled in all official kernel packages by Archlinux team
@@ -193,9 +228,46 @@ prepare() {
     fi
   fi
 
+  if [ "$_tickrate" = "perodic" ]; then
+    msg2 "Enabling periodic ticks..."
+    scripts/config --disable CONFIG_NO_HZ_IDLE
+    scripts/config --disable CONFIG_NO_HZ_FULL
+    scripts/config --disable CONFIG_NO_HZ
+    scripts/config --disable CONFIG_NO_HZ_COMMON
+    scripts/config --enable CONFIG_HZ_PERIODIC
+  elif [ "$_tickrate" = "idle" ]; then
+    msg2 "Enabling tickless idle..."
+    scripts/config --disable CONFIG_HZ_PERIODIC
+    scripts/config --disable CONFIG_NO_HZ_FULL
+    scripts/config --enable CONFIG_NO_HZ_IDLE
+    scripts/config --enable CONFIG_NO_HZ
+    scripts/config --enable CONFIG_NO_HZ_COMMON
+  elif [ "$_tickrate" = "full" ]; then
+    msg2 "Enabling tickless idle..."
+    scripts/config --disable CONFIG_HZ_PERIODIC
+    scripts/config --disable CONFIG_NO_HZ_IDLE
+    scripts/config --disable CONFIG_CONTEXT_TRACKING_FORCE
+    scripts/config --enable CONFIG_NO_HZ_FULL_NODEF
+    scripts/config --enable CONFIG_NO_HZ_FULL
+    scripts/config --enable CONFIG_NO_HZ
+    scripts/config --enable CONFIG_NO_HZ_COMMON
+    scripts/config --enable CONFIG_CONTEXT_TRACKING
+  fi
+
   if [ "$use_numa" = "n" ]; then
     msg2 "Disabling NUMA..."
     scripts/config --disable CONFIG_NUMA
+    scripts/config --disable CONFIG_AMD_NUMA
+    scripts/config --disable CONFIG_X86_64_ACPI_NUMA
+    scripts/config --disable CONFIG_NODES_SPAN_OTHER_NODES
+    scripts/config --disable CONFIG_NUMA_EMU
+    scripts/config --disable CONFIG_NEED_MULTIPLE_NODES
+    scripts/config --disable CONFIG_USE_PERCPU_NUMA_NODE_ID
+    scripts/config --disable CONFIG_ACPI_NUMA
+    scripts/config --disable CONFIG_ARCH_SUPPORTS_NUMA_BALANCING
+    scripts/config --disable CONFIG_NODES_SHIFT
+    scripts/config --undefine CONFIG_NODES_SHIFT
+    scripts/config --disable CONFIG_NEED_MULTIPLE_NODES
   fi
 
   # NOT compress modules by default (may increase disk space)
@@ -274,7 +346,7 @@ prepare() {
     scripts/config --disable CONFIG_CPU_SUP_ZHAOXIN
     scripts/config --disable CONFIG_AGP_SIS
     scripts/config --disable CONFIG_AGP_VIA
-    scripts/config --set-val CONFIG_NR_CPUS ${_jobs}
+    scripts/config --set-val CONFIG_NR_CPUS ${_core}
     if [ "$_microarchitecture" == 98 ]; then
       msg2 "Setting for Intel CPU"
       scripts/config --disable CONFIG_CPU_SUP_AMD
@@ -292,7 +364,7 @@ prepare() {
       scripts/config --enable CONFIG_MICROCODE_INTEL
       scripts/config --enable CONFIG_X86_INTEL_PSTATE
       scripts/config --enable CONFIG_X86_SPEEDSTEP_CENTRINO
-      scripts/config --modules CONFIG_X86_P4_CLOCKMOD
+      scripts/config --module CONFIG_X86_P4_CLOCKMOD
       scripts/config --enable CONFIG_INTEL_IDLE
       scripts/config --enable CONFIG_AGP_INTEL
     elif [ "$_microarchitecture" == 99 ]; then
@@ -310,7 +382,7 @@ prepare() {
       scripts/config --enable CONFIG_X86_AMD_PSTATE
       scripts/config --enable CONFIG_X86_ACPI_CPUFREQ_CPB
       scripts/config --enable CONFIG_X86_POWERNOW_K8
-      scripts/config --modules CONFIG_X86_AMD_FREQ_SENSITIVITY
+      scripts/config --module CONFIG_X86_AMD_FREQ_SENSITIVITY
       scripts/config --enable CONFIG_AGP_AMD64
     fi
   fi
@@ -338,6 +410,7 @@ prepare() {
 
   scripts/config --disable CONFIG_X86_X32
   scripts/config --disable CONFIG_STACKPROTECTOR_STRONG
+  scripts/config --enable CONFIG_WINESYNC
 
   # Let's user choose microarchitecture optimization in GCC
   # If you're using this PKGBUILD, if will use native by default
