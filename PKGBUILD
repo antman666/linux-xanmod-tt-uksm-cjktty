@@ -15,7 +15,7 @@
 ## Default is: 0 => generic
 ## Good option if your package is for one machine: 98 => Intel native
 ##                                                 99 => AMD native
-## It will use native by default
+## It will use generic by default
 if [ -z ${_microarchitecture+x} ]; then
   _microarchitecture=0
 fi
@@ -103,7 +103,7 @@ fi
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
 _major=5.15
-pkgver=${_major}.36
+pkgver=${_major}.38
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
@@ -184,24 +184,24 @@ prepare() {
     if [ $_use_llvm_type = "thin" ]; then
       msg2 "Enable LTO_CLANG_THIN"
       scripts/config --disable LTO_NONE \
-        --enable LTO \
-        --enable LTO_CLANG \
-        --enable ARCH_SUPPORTS_LTO_CLANG \
-        --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
-        --enable HAS_LTO_CLANG \
-        --enable LTO_CLANG_THIN \
-        --enable HAVE_GCC_PLUGINS
+                     --enable LTO \
+                     --enable LTO_CLANG \
+                     --enable ARCH_SUPPORTS_LTO_CLANG \
+                     --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
+                     --enable HAS_LTO_CLANG \
+                     --enable LTO_CLANG_THIN \
+                     --enable HAVE_GCC_PLUGINS
     elif [ $_use_llvm_type = "full" ]; then
       msg2 "Enable LTO_CLANG_FULL"
       scripts/config --disable LTO_NONE \
-        --enable LTO \
-        --enable LTO_CLANG \
-        --enable ARCH_SUPPORTS_LTO_CLANG \
-        --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
-        --enable HAS_LTO_CLANG \
-        --enable LTO_CLANG \
-        --enable LTO_CLANG_FULL \
-        --enable HAVE_GCC_PLUGINS
+                     --enable LTO \
+                     --enable LTO_CLANG \
+                     --enable ARCH_SUPPORTS_LTO_CLANG \
+                     --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
+                     --enable HAS_LTO_CLANG \
+                     --enable LTO_CLANG \
+                     --enable LTO_CLANG_FULL \
+                     --enable HAVE_GCC_PLUGINS
     else
       scripts/config --enable CONFIG_LTO_NONE
     fi
