@@ -103,7 +103,7 @@ fi
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
 _major=5.15
-pkgver=${_major}.51
+pkgver=${_major}.53
 _branch=5.x
 xanmod=1
 pkgrel=${xanmod}
