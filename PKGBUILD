@@ -156,7 +156,7 @@ prepare() {
   msg2 "Setting version..."
   scripts/setlocalversion --save-scmversion
   echo "-$pkgrel" > localversion.10-pkgrel
-  #echo "${pkgbase#linux-xanmod}" > localversion.20-pkgname
+  echo "${pkgbase#linux-xanmod}" > localversion.20-pkgname
 
   # Archlinux patches
   local src
@@ -169,7 +169,7 @@ prepare() {
   done
 
   # Applying configuration
-  cp -vf CONFIGS/xanmod/${_compiler}/config .config
+  cp -vf CONFIGS/xanmod/gcc/config .config
 
   # enable LTO_CLANG
   if [ "${_compiler}" = "clang" ]; then
