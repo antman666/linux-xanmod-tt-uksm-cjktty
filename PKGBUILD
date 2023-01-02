@@ -169,7 +169,7 @@ prepare() {
   done
 
   # Applying configuration
-  cp -vf CONFIGS/xanmod/gcc/config .config
+  cp -vf CONFIGS/xanmod/gcc/${_config} .config
 
   # enable LTO_CLANG
   if [ "${_compiler}" = "clang" ]; then
