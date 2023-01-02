@@ -102,7 +102,6 @@ pkgrel=${xanmod}
 pkgdesc='Linux Xanmod. Development branch with the Task Type CPU Scheduler by Hamad Al Marri'
 url="http://www.xanmod.org/"
 arch=(x86_64)
-
 license=(GPL2)
 depends=(uksmd)
 makedepends=(
