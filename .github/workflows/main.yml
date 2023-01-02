@@ -1,5 +1,7 @@
 name: Github Action Build PKGBUILD
-on: push
+on: 
+  push:
+  workflow_dispatch:
 jobs:
   build_for_arch:
     runs-on: ubuntu-latest
