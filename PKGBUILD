@@ -94,8 +94,8 @@ fi
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
-_major=6.1
-pkgver=${_major}.8
+_major=6.3
+pkgver=${_major}.0
 _branch=6.x
 xanmod=1
 pkgrel=${xanmod}
@@ -154,7 +154,6 @@ prepare() {
   patch -Np1 -i ../patch-${pkgver}-xanmod${xanmod}-tt
 
   msg2 "Setting version..."
-  scripts/setlocalversion --save-scmversion
   echo "-$pkgrel" > localversion.10-pkgrel
   echo "${pkgbase#linux-xanmod}" > localversion.20-pkgname
 
@@ -240,7 +239,7 @@ prepare() {
     msg2 "Disabling SELinux..."
     scripts/config --disable CONFIG_SECURITY_SELINUX
   fi
-  
+
   if [ "$use_tomoyo" = "n" ]; then
     msg2 "Disabling TOMOYO..."
     scripts/config --disable CONFIG_SECURITY_TOMOYO
@@ -428,7 +427,7 @@ build() {
 }
 
 _package() {
-  pkgdesc="The Linux kernel and modules with Xanmod patches"
+  pkgdesc="The Linux kernel and modules with Xanmod, TaskType, cjktty etc. patches"
   depends=(coreutils kmod initramfs)
   optdepends=('crda: to set the correct wireless channels of your country'
               'linux-firmware: firmware images needed for some devices')
@@ -436,6 +435,7 @@ _package() {
             WIREGUARD-MODULE
             KSMBD-MODULE
             NTFS3-MODULE)
+  install=kernel.install
 
   cd linux-${_major}
   local kernver="$(<version)"
@@ -474,7 +474,7 @@ _package-headers() {
   install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  if [ -f "$builddir/tools/bpf/resolve_btfids" ]; then install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids ; fi
+  if [ -f "tools/bpf/resolve_btfids/resolve_btfids" ]; then install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids ; fi
 
   msg2 "Installing headers..."
   cp -t "$builddir" -a include
@@ -532,7 +532,7 @@ _package-headers() {
 
   msg2 "Stripping vmlinux..."
   strip -v $STRIP_STATIC "$builddir/vmlinux"
-  
+
   msg2 "Adding symlink..."
   mkdir -p "$pkgdir/usr/src"
   ln -sr "$builddir" "$pkgdir/usr/src/$pkgbase"

@@ -10,9 +10,9 @@ jobs:
         uses: antman666/build-aur-action@mine
         with:
           repo-name: linux-xanmod-tt-uksm-cjktty
-      - uses: ncipollo/release-action@v1.12.0
+      - uses: ncipollo/release-action@main
         with:
           allowUpdates: true
-          tag: "linux-xanmod-tt-uksm-cjktty_v6.1.8-1"
+          tag: "linux-xanmod-tt-uksm-cjktty_v6.3.0-1"
           artifacts: "./*/*.zst"
           token: ${{ secrets.GITHUB_TOKEN }}
