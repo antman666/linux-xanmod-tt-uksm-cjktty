@@ -57,8 +57,8 @@ _use_O3=${_use_O3-y}
 # Use LLVM Type ( "full" or "thin" )
 _use_llvm_type=${_use_llvm_type-'full'}
 
-# cpufreq gov (available:performance,ondemand,conservative,userspace,schedutil,powersave)
-_cpufreq=${_cpufreq-'performance'}
+# cpufreq gov (available: performance, ondemand, conservative, userspace, schedutil, powersave)
+_cpufreq=${_cpufreq-'schedutil'}
 
 # LRU setting
 _use_lru=${_use_lru-y}
@@ -95,7 +95,7 @@ fi
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
 _major=6.3
-pkgver=${_major}.0
+pkgver=${_major}.4
 _branch=6.x
 xanmod=1
 pkgrel=${xanmod}
