@@ -1,6 +1,5 @@
 name: Github Action Build PKGBUILD
 on: 
-  push:
   workflow_dispatch:
 jobs:
   build_for_arch:
