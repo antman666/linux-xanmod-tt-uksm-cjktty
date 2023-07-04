@@ -121,7 +121,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${_branch}/linux-${_major}.tar
         "https://github.com/antman666/linux-xanmod-tt-uksm-cjktty/releases/download/linux-xanmod-tt_patch/patch-${pkgver}-xanmod${xanmod}-tt.zst"
         choose-gcc-optimization.sh
         "0001-cjktty.patch::https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${_branch}/cjktty-${_major}.patch"
-        "0002-UKSM.patch::${_patches_url}/uksmd-cachyos-patches-all/0001-uksmd-cachyos-patches.patch"
+        "0002-UKSM.patch::${_patches_url}/uksmd-cachyos-patches/0001-mm-expose-per-process-KSM-control-via-syscalls.patch"
        )
 validpgpkeys=(
     'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linux Torvalds
