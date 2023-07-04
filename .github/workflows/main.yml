@@ -1,5 +1,6 @@
 name: Github Action Build PKGBUILD
 on: 
+  push:
   workflow_dispatch:
 jobs:
   build_for_arch:
@@ -12,6 +13,6 @@ jobs:
       - uses: ncipollo/release-action@main
         with:
           allowUpdates: true
-          tag: "linux-xanmod-tt-uksm-cjktty_v6.3.9-1"
+          tag: "linux-xanmod-tt-uksm-cjktty_v6.4.1-1"
           artifacts: "./*/*.zst"
           token: ${{ secrets.GITHUB_TOKEN }}
