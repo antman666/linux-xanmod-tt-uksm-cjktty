@@ -67,11 +67,11 @@ _use_lru=${_use_lru-y}
 _use_zram=${_use_zram-}
 
 # Choose between the 4 main configs for stable branch. Default x86-64-v1 which use CONFIG_GENERIC_CPU2:
-# Possible values: config_x86-64-v1 (default) / config_x86-64-v2 / config_x86-64-v3 / config_x86-64-v4
+# Possible values: config_x86-64-v1 / config_x86-64-v2 (default) / config_x86-64-v3 / config_x86-64-v4
 # This will be overwritten by selecting any option in microarchitecture script
 # Source files: https://github.com/xanmod/linux/tree/5.17/CONFIGS/xanmod/gcc
 if [ -z ${_config+x} ]; then
-  _config=config_x86-64-v1
+  _config=config_x86-64-v2
 fi
 
 # Compile ONLY used modules to VASTLY reduce the number of modules built
@@ -95,7 +95,7 @@ fi
 
 pkgbase=linux-xanmod-tt-uksm-cjktty
 _major=6.4
-pkgver=${_major}.3
+pkgver=${_major}.13
 _branch=6.x
 xanmod=1
 pkgrel=${xanmod}
@@ -136,12 +136,12 @@ for _patch in ${_patches[@]}; do
     source+=("${_patch}::https://raw.githubusercontent.com/archlinux/svntogit-packages/${_commit}/trunk/${_patch}")
 done
 
-sha256sums=('2ca1f17051a430f6fed1196e4952717507171acfd97d96577212502703b25deb'
+sha256sums=('8fa0588f0c2ceca44cac77a0e39ba48c9f00a6b9dc69761c02a5d3efac8da7f3'
             'SKIP'
-            '27e034ebe01a31f190c9fa1e593df216578db07d75d3463c129f4360dda3e3e0'
-            '1ac18cad2578df4a70f9346f7c6fccbb62f042a0ee0594817fdef9f2704904ee'
-            'c5bdf89d7867c368dfd7b7c16e5a50a99ca8022de28ab15315bdcb5dab8aad85'
-            '1e88663a54843a747d717ea6f2fc5d1233056c30433e1b685d09cae9921a2cff')
+            'fd92afa41947c628eb758bf389b987c9502863d5c75c09d41fd9ee49ecf14d9c'
+            '5c84bfe7c1971354cff3f6b3f52bf33e7bbeec22f85d5e7bfde383b54c679d30'
+            'a06671be0ea57693c09f9f96fabfdefd69153bdda2bf45d516825f145e6b75cf'
+            '1c4deddaede56cb45c4f94bff94a3d42e75cff72b4d24b4e7a7246609a1e816c')
 
 export KBUILD_BUILD_HOST=${KBUILD_BUILD_HOST:-archlinux}
 export KBUILD_BUILD_USER=${KBUILD_BUILD_USER:-makepkg}
